@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapowanie procesów pod automatyzację — Warsztat AIbiz</title>
+<!--
+  PREZENTACJA: Warsztat AIbiz "Mapowanie procesów pod automatyzację"
+  Branding: NoCodeWork (pink #FD43BE + purple #9E30DE + Sora + MBJ Handwriting)
+  Format: vanilla JS, single file, fullscreen slides
+
+  STEROWANIE:
+  → / SPACJA / PageDown — następny slajd
+  ← / PageUp           — poprzedni slajd
+  Home / End           — pierwszy / ostatni
+  F                    — fullscreen toggle
+  H                    — pokaż/ukryj overlay UI (przycisk fullscreen + hint)
+  swipe (mobile)       — nawigacja dotykiem
+
+  STAN: FAZA 1 — 5 próbnych slajdów (do akceptacji stylu)
+  Po akceptacji: dobudowanie pozostałych ~72 slajdów wg AIbiz/wsad-prezentacja.md
+-->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+  @font-face {
+    font-family: 'MBJ Handwriting';
+    src: url('fonts/MBJ-Handwriting.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    /* NoCodeWork brandbook colors */
+    --pink: #FD43BE;          /* Heather Violet — główny akcent */
+    --purple: #9E30DE;        /* Pearl Violet — drugorzędny akcent */
+    --blush: #FFEAF8;         /* Lavender Blush — jasne tła */
+    --black: #000000;         /* Jet Black — domyślne tło */
+    --white: #FFFFFF;
+    --dim: #888899;           /* przyciszony tekst */
+    --dim-2: #555566;         /* jeszcze ciemniejszy */
+
+    --gradient: linear-gradient(135deg, #FD43BE 0%, #9E30DE 100%);
+    --gradient-soft: linear-gradient(135deg, rgba(253,67,190,0.15) 0%, rgba(158,48,222,0.15) 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Sora', -apple-system, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Slide layout ─── */
+  .slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8vh 8vw 12vh 8vw;  /* bottom większy = miejsce na footer */
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide.active { display: flex; }
+
+  /* ─── Typography ─── */
+  .big {
+    font-size: clamp(2.6rem, 5.5vw, 5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    max-width: 1100px;
+  }
+
+  .huge {
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    max-width: 1200px;
+  }
+
+  .medium {
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1.3;
+    max-width: 950px;
+  }
+
+  .small {
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    font-weight: 400;
+    line-height: 1.5;
+    max-width: 800px;
+    color: var(--dim);
+  }
+
+  .tiny {
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--dim);
+  }
+
+  /* ─── Handwriting accent ─── */
+  .hand {
+    font-family: 'MBJ Handwriting', cursive;
+    color: var(--pink);
+    font-weight: normal;
+    letter-spacing: 0.01em;
+    /* MBJ Handwriting jest węższe — kompensacja rozmiaru */
+    font-size: 1.15em;
+    display: inline-block;
+    transform: rotate(-2deg);
+    line-height: 0.9;
+  }
+
+  .hand-big {
+    font-family: 'MBJ Handwriting', cursive;
+    color: var(--pink);
+    font-size: clamp(4rem, 9vw, 8rem);
+    line-height: 0.9;
+    display: inline-block;
+    transform: rotate(-3deg);
+  }
+
+  /* ─── Color helpers ─── */
+  .pink { color: var(--pink); }
+  .purple { color: var(--purple); }
+  .white { color: var(--white); }
+  .dim { color: var(--dim); }
+
+  /* ─── Spacers ─── */
+  .gap { height: 2vh; }
+  .gap-big { height: 4vh; }
+  .gap-huge { height: 7vh; }
+
+  /* ─── Section eyebrow ─── */
+  .eyebrow {
+    font-size: clamp(0.75rem, 1vw, 0.9rem);
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 2vh;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 1: HERO (tytułówka)                                     */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-hero {
+    background: radial-gradient(ellipse at top, #1a0a18 0%, #000 70%);
+  }
+
+  .slide-hero .hero-logo {
+    width: clamp(220px, 28vw, 420px);
+    height: auto;
+    margin-bottom: 5vh;
+  }
+
+  .slide-hero .author-row {
+    margin-top: 5vh;
+    font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+    color: var(--dim);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .slide-hero .author-row .sep {
+    color: var(--pink);
+    margin: 0 0.6em;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 2: SECTION TITLE (tytuł sekcji, gradient tło)           */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-section-title {
+    background: var(--gradient);
+  }
+
+  .slide-section-title .section-num {
+    font-size: clamp(0.75rem, 1.1vw, 1rem);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 3vh;
+  }
+
+  .slide-section-title .huge {
+    color: var(--white);
+    text-shadow: 0 4px 30px rgba(0,0,0,0.2);
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 3: STATEMENT (jedno hasło na całym slajdzie)            */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-statement {
+    background: var(--black);
+  }
+
+  .slide-statement .statement-text {
+    font-size: clamp(2.4rem, 5.5vw, 5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    max-width: 1200px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 4: BULLETS (lista 3-6 punktów)                          */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-bullets .bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5vh;
+    max-width: 900px;
+    text-align: left;
+    margin-top: 4vh;
+  }
+
+  .slide-bullets .bullets li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .slide-bullets .bullets .num {
+    font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+    font-weight: 800;
+    color: var(--pink);
+    line-height: 1;
+    min-width: 2.5em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .slide-bullets .bullets .text {
+    flex: 1;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 5: COMPARE (porównanie 2 boxów)                         */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-compare .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3vw;
+    width: min(90vw, 1100px);
+    margin-top: 4vh;
+  }
+
+  .slide-compare .compare-box {
+    border-radius: 20px;
+    padding: 3.5vh 3vw;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+    text-align: left;
+    min-height: 38vh;
+  }
+
+  .slide-compare .compare-box.left {
+    background: var(--blush);
+    color: #2a0a22;
+  }
+
+  .slide-compare .compare-box.right {
+    background: var(--gradient);
+    color: var(--white);
+  }
+
+  .slide-compare .compare-label {
+    font-size: clamp(0.8rem, 1.1vw, 1rem);
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .slide-compare .compare-title {
+    font-size: clamp(1.6rem, 3vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .slide-compare .compare-desc {
+    font-size: clamp(0.95rem, 1.5vw, 1.2rem);
+    font-weight: 400;
+    line-height: 1.5;
+    opacity: 0.85;
+    margin-top: auto;
+  }
+
+  .slide-compare .compare-footnote {
+    margin-top: 4vh;
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    color: var(--dim);
+    font-style: italic;
+    max-width: 800px;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 6: PYRAMID (slajd 22 — czankowanie procesów)            */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-pyramid .pyramid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2vh;
+    width: min(85vw, 800px);
+    margin-top: 4vh;
+  }
+
+  .slide-pyramid .pyramid-level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.4vh 2vw;
+    border-radius: 14px;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .slide-pyramid .pyramid-level .lvl-title {
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .slide-pyramid .pyramid-level .lvl-desc {
+    font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    font-weight: 400;
+    opacity: 0.85;
+    margin-top: 0.3rem;
+  }
+
+  .slide-pyramid .pyramid-level:nth-child(1) {
+    width: 38%;
+    background: var(--gradient);
+    color: var(--white);
+  }
+  .slide-pyramid .pyramid-level:nth-child(2) {
+    width: 60%;
+    background: rgba(253, 67, 190, 0.18);
+    color: var(--white);
+    border: 1px solid rgba(253, 67, 190, 0.35);
+  }
+  .slide-pyramid .pyramid-level:nth-child(3) {
+    width: 85%;
+    background: rgba(158, 48, 222, 0.12);
+    color: var(--white);
+    border: 1px solid rgba(158, 48, 222, 0.25);
+  }
+  .slide-pyramid .pyramid-level:nth-child(4) {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--dim);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 7: TOOLS (slajdy 30, 42, 50 — siatka narzędzi)          */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-tools .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5vh 1.5vw;
+    width: min(90vw, 1100px);
+    margin-top: 4vh;
+  }
+
+  .slide-tools .tool-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(253, 67, 190, 0.2);
+    border-radius: 14px;
+    padding: 2vh 1.5vw;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5vh;
+    text-align: left;
+    transition: all 0.2s;
+  }
+
+  .slide-tools .tool-card:hover {
+    border-color: var(--pink);
+    background: rgba(253, 67, 190, 0.08);
+  }
+
+  .slide-tools .tool-category {
+    font-size: clamp(0.65rem, 0.85vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pink);
+  }
+
+  .slide-tools .tool-names {
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.3;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 8: TRANSITION (plansze przejściowe między sekcjami)      */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-transition {
+    background: var(--gradient);
+  }
+
+  .slide-transition .transition-eyebrow {
+    font-size: clamp(0.8rem, 1.2vw, 1.05rem);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 3vh;
+  }
+
+  .slide-transition .transition-text {
+    font-size: clamp(2.6rem, 6vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--white);
+    max-width: 1100px;
+  }
+
+  .slide-transition .transition-sub {
+    margin-top: 4vh;
+    font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+    font-weight: 400;
+    color: rgba(255,255,255,0.85);
+    max-width: 800px;
+    line-height: 1.4;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 9: DIAGRAM (placeholder na PNG z Excalidraw)            */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-diagram {
+    background: var(--black);
+    padding: 6vh 4vw 12vh 4vw;
+  }
+
+  .slide-diagram .diagram-title {
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 2vh;
+    letter-spacing: -0.01em;
+  }
+
+  .slide-diagram .diagram-placeholder {
+    width: min(92vw, 1400px);
+    height: 65vh;
+    border: 2px dashed rgba(253, 67, 190, 0.4);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    background: rgba(253, 67, 190, 0.04);
+    padding: 3vh 3vw;
+  }
+
+  .slide-diagram .diagram-placeholder .icon {
+    font-size: clamp(3rem, 5vw, 4.5rem);
+    color: var(--pink);
+    opacity: 0.6;
+  }
+
+  .slide-diagram .diagram-placeholder .filename {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+    color: var(--pink);
+    background: rgba(0,0,0,0.4);
+    padding: 0.6em 1em;
+    border-radius: 6px;
+    border: 1px solid rgba(253, 67, 190, 0.3);
+  }
+
+  .slide-diagram .diagram-placeholder .hint {
+    font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+    color: var(--dim);
+    text-align: center;
+    max-width: 500px;
+    line-height: 1.5;
+  }
+
+  .slide-diagram .diagram-img {
+    max-width: 92vw;
+    max-height: 72vh;
+    width: auto;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  .slide-diagram .diagram-comment {
+    margin-top: 2vh;
+    font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+    color: var(--dim);
+    font-style: italic;
+    max-width: 900px;
+  }
+
+  /* Wariant: 2 diagramy obok siebie (slajdy 43, 51 — porównanie AS-IS vs TO-BE) */
+  .slide-diagram .diagram-2up {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2vw;
+    width: min(96vw, 1500px);
+  }
+
+  .slide-diagram .diagram-2up .diagram-placeholder {
+    width: 100%;
+    height: 55vh;
+  }
+
+  .slide-diagram .diagram-2up .diagram-label {
+    font-size: clamp(0.75rem, 1vw, 0.9rem);
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 1vh;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 10: QA (slajdy z pytaniami od społeczności)             */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-qa .qa-block {
+    font-size: clamp(0.7rem, 0.95vw, 0.85rem);
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 2vh;
+  }
+
+  .slide-qa .qa-author {
+    font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    color: var(--dim);
+    margin-bottom: 3vh;
+    letter-spacing: 0.02em;
+  }
+
+  .slide-qa .qa-question {
+    font-size: clamp(1.8rem, 3.6vw, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--white);
+    max-width: 1100px;
+    letter-spacing: -0.02em;
+  }
+
+  .slide-qa .qa-question::before {
+    content: '"';
+    color: var(--pink);
+    font-size: 1.4em;
+    line-height: 0.5;
+    vertical-align: -0.2em;
+    margin-right: 0.1em;
+  }
+
+  .slide-qa .qa-question::after {
+    content: '"';
+    color: var(--pink);
+    font-size: 1.4em;
+    line-height: 0.5;
+    vertical-align: -0.2em;
+    margin-left: 0.1em;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* TYP 11: TEXT FRAGMENT (cytaty z plików case study)          */
+  /* ═══════════════════════════════════════════════════════════ */
+  .slide-text-fragment .fragment-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-left: 4px solid var(--pink);
+    border-radius: 8px;
+    padding: 3vh 3vw;
+    margin-top: 4vh;
+    width: min(90vw, 1100px);
+    text-align: left;
+  }
+
+  .slide-text-fragment .fragment-text {
+    font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+    line-height: 1.7;
+    color: var(--white);
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .slide-text-fragment .fragment-source {
+    margin-top: 2vh;
+    font-size: clamp(0.75rem, 1vw, 0.9rem);
+    color: var(--dim);
+    font-style: normal;
+    letter-spacing: 0.05em;
+  }
+
+  .slide-text-fragment .fragment-comment {
+    margin-top: 3vh;
+    font-size: clamp(1rem, 1.5vw, 1.3rem);
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  /* ═══════════════════════════════════════════════════════════ */
+  /* FOOTER (na każdym slajdzie)                                  */
+  /* ═══════════════════════════════════════════════════════════ */
+  .footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 7vh;
+    min-height: 50px;
+    padding: 0 3vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  .footer .footer-left,
+  .footer .footer-center,
+  .footer .footer-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .footer .nocodework-logo {
+    height: clamp(20px, 2.6vh, 28px);
+    width: auto;
+  }
+
+  .footer .aibiz-logo {
+    height: clamp(22px, 2.8vh, 30px);
+    width: auto;
+    opacity: 0.85;
+  }
+
+  .footer .footer-center {
+    font-size: clamp(0.7rem, 0.95vw, 0.85rem);
+    color: var(--dim);
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+
+  .footer .slide-num {
+    font-size: clamp(0.7rem, 0.95vw, 0.85rem);
+    color: var(--dim);
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+
+  /* Footer na slajdach z gradientowym tłem (section-title) — białe elementy */
+  .slide-section-title ~ .footer,
+  .slide-section-title.active ~ .footer {
+    /* obsługa przez JS niepotrzebna — zmieniamy kolory zawsze, footer i tak ma transparent bg */
+  }
+
+  /* ─── Progress bar ─── */
+  .progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--gradient);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 200;
+    box-shadow: 0 0 12px rgba(253, 67, 190, 0.5);
+  }
+
+  /* ─── Fullscreen button ─── */
+  .fullscreen-btn {
+    position: fixed;
+    top: 2vh;
+    right: 2vw;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--white);
+    padding: 0.5em 1em;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: 'Sora', sans-serif;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 200;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .fullscreen-btn:hover {
+    border-color: var(--pink);
+    color: var(--pink);
+  }
+  .fullscreen-btn { transition: opacity 0.3s, border-color 0.2s, color 0.2s; }
+
+  /* ─── Controls hint ─── */
+  .controls-hint {
+    position: fixed;
+    top: 2vh;
+    left: 2vw;
+    font-size: 0.65rem;
+    color: var(--dim);
+    opacity: 0.4;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+    z-index: 50;
+    font-weight: 500;
+    transition: opacity 0.3s;
+  }
+
+  /* ─── Hide UI mode (klawisz H) ─── */
+  body.hide-ui .controls-hint,
+  body.hide-ui .fullscreen-btn {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .slide { padding: 6vh 5vw 14vh 5vw; }
+    .slide-compare .compare {
+      grid-template-columns: 1fr;
+      gap: 2vh;
+    }
+    .slide-compare .compare-box { min-height: auto; }
+    .footer .footer-center { display: none; }
+    .controls-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="controls-hint">&larr; &rarr; nawigacja &middot; F fullscreen &middot; H ukryj UI</div>
+<button class="fullscreen-btn" onclick="toggleFullscreen()">Fullscreen</button>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 0 — TYTUŁÓWKA (slide-hero)                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-hero active" data-act="">
+  <img src="assets/nocodework-logo-white.svg" alt="NoCodeWork" class="hero-logo">
+
+  <div class="huge">
+    Mapowanie procesów<br>
+    pod <span class="hand-big">automatyzację</span>
+  </div>
+
+  <div class="gap-big"></div>
+
+  <div class="medium dim" style="font-weight: 400; max-width: 850px;">
+    Jak dojść do dobrze opisanego procesu,<br>
+    żeby AI zrobiło resztę
+  </div>
+
+  <div class="author-row">
+    Julia Czarniak <span class="sep">·</span> Mikołaj Brunka <span class="sep">·</span> dla społeczności AIbiz
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 1 — SECTION TITLE: Po co mapujemy? (slide-section-title) -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-section-title" data-act="Sekcja 2 · Teoria">
+  <div class="section-num">Część 2A</div>
+  <div class="huge">Po co mapujemy<br>procesy?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 2 — STATEMENT: Główna myśl (slide-statement)          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-statement" data-act="Sekcja 2 · Teoria">
+  <div class="statement-text">
+    Automatyzacja bez mapowania<br>
+    = automatyzacja <span class="hand-big" style="font-size: 1.2em;">chaosu</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 3 — BULLETS: Trzy konsekwencje (slide-bullets)        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Co się dzieje, gdy pominiesz mapowanie</div>
+  <div class="big">Trzy konsekwencje</div>
+
+  <ul class="bullets">
+    <li>
+      <span class="num">01</span>
+      <span class="text">Automatyzujesz coś, czego sam dobrze nie rozumiesz</span>
+    </li>
+    <li>
+      <span class="num">02</span>
+      <span class="text">Klient płaci za rozwiązanie, które nie pasuje do realnego procesu</span>
+    </li>
+    <li>
+      <span class="num">03</span>
+      <span class="text">Po 2 miesiącach okazuje się, że "to samo" robi się na 5 sposobów w różnych działach</span>
+    </li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 4 — COMPARE: AS-IS vs TO-BE (slide-compare)           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-compare" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Dwie perspektywy każdego procesu</div>
+  <div class="big">AS-IS vs TO-BE</div>
+
+  <div class="compare">
+    <div class="compare-box left">
+      <div class="compare-label">AS-IS</div>
+      <div class="compare-title">Jak proces JEST<br>naprawdę</div>
+      <div class="compare-desc">
+        Realny stan: workaroundy, wąskie gardła, "robimy tak bo system nie działa". To, co naprawdę dzieje się w firmie.
+      </div>
+    </div>
+    <div class="compare-box right">
+      <div class="compare-label">TO-BE</div>
+      <div class="compare-title">Jak ma być<br>po automatyzacji</div>
+      <div class="compare-desc">
+        Wizja docelowa. Co automatyzujemy, co zostawiamy człowiekowi, jak wpinają się narzędzia.
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-footnote">
+    Najczęstszy błąd: ludzie od razu rysują TO-BE, bo AS-IS "jest nudne".
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 5 — Mapowanie to nie dokumentacja                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Po co mapujemy procesy</div>
+  <div class="big">Mapowanie to nie<br>dokumentacja</div>
+  <ul class="bullets">
+    <li><span class="num">→</span><span class="text">Mapowanie to <span class="pink">narzędzie decyzyjne</span>, nie archiwum</span></li>
+    <li><span class="num">→</span><span class="text">Cel: zrozumieć gdzie są wąskie gardła, co automatyzować, co zostawić</span></li>
+    <li><span class="num">→</span><span class="text">Nie chodzi o "ładny diagram do segregatora"</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 6 — Co zyskujesz                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Po co mapujemy procesy</div>
+  <div class="big">Co zyskujesz z dobrego mapowania</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Wiesz <span class="pink">co automatyzować</span> (a co NIE)</span></li>
+    <li><span class="num">02</span><span class="text">Widzisz wąskie gardła i workaroundy</span></li>
+    <li><span class="num">03</span><span class="text">Masz wsad do wyceny i planowania</span></li>
+    <li><span class="num">04</span><span class="text">Zespół rozumie po co to robisz — rozbrajanie oporu</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 7 — Section title: Jak rozmawiać z ludźmi             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-section-title" data-act="Sekcja 2 · Teoria">
+  <div class="section-num">Część 2B</div>
+  <div class="huge">Jak rozmawiać<br>z ludźmi</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 8 — Statement: ludzie się boją                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-statement" data-act="Sekcja 2 · Teoria">
+  <div class="statement-text">
+    Ludzie się <span class="hand-big" style="font-size: 1.2em;">BOJĄ</span><br>
+    automatyzacji
+  </div>
+  <div class="gap-big"></div>
+  <div class="medium dim" style="font-weight: 400;">
+    Myślą: "automatyzacja = mnie zwolnią".<br>
+    Bez tego rozbroisz, dostaniesz wersję wyretuszowaną.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 9 — Jak rozbroić opór                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Jak rozmawiać z ludźmi</div>
+  <div class="big">Jak rozbroić opór</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Bądź <span class="pink">transparentny</span> — powiedz wprost, po co to robicie</span></li>
+    <li><span class="num">02</span><span class="text">Pokaż, że celem jest zdjęcie nudy i powtarzalności, <span class="pink">nie ludzi</span></span></li>
+    <li><span class="num">03</span><span class="text">Włącz ludzi do procesu — niech czują, że uczestniczą</span></li>
+    <li><span class="num">04</span><span class="text">Obiecuj tylko to, co możesz dowieźć</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 10 — Compare: Właściciel vs Zespół                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-compare" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Dwie perspektywy</div>
+  <div class="big">Właściciel vs zespół</div>
+  <div class="compare">
+    <div class="compare-box left">
+      <div class="compare-label">Właściciel</div>
+      <div class="compare-title">Jak chciałby,<br>żeby działało</div>
+      <div class="compare-desc">Zna ramy i wizję. Często sam wierzy w wersję "idealną" — czyli TO-BE, nie AS-IS.</div>
+    </div>
+    <div class="compare-box right">
+      <div class="compare-label">Zespół</div>
+      <div class="compare-title">Jak naprawdę<br>działa</div>
+      <div class="compare-desc">Zna szczegóły wykonawcze, workaroundy, gdzie "system nie działa". To jest AS-IS.</div>
+    </div>
+  </div>
+  <div class="compare-footnote">Obie perspektywy są potrzebne — i bardzo różne.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 11 — Dlaczego sama rozmowa z właścicielem nie wystarczy -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Jak rozmawiać z ludźmi</div>
+  <div class="big">Dlaczego sama rozmowa<br>z właścicielem nie wystarczy</div>
+  <ul class="bullets">
+    <li><span class="num">→</span><span class="text">Właściciel zna ramy, ale nie zna szczegółów wykonawczych</span></li>
+    <li><span class="num">→</span><span class="text">Często nie wie o workaroundach zespołu</span></li>
+    <li><span class="num">→</span><span class="text">Wierzy w wersję "idealną", nie "realną"</span></li>
+    <li><span class="num">→</span><span class="text"><span class="pink">Bez zespołu mapujesz fikcję</span></span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 12 — Kto MUSI być na warsztacie                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Skład sesji mapującej</div>
+  <div class="big">Kto MUSI być<br>na warsztacie</div>
+  <ul class="bullets">
+    <li><span class="num">→</span><span class="text">Wszyscy, którzy realnie wykonują proces</span></li>
+    <li><span class="num">→</span><span class="text">Co najmniej jedna osoba decyzyjna (właściciel/manager)</span></li>
+    <li><span class="num">→</span><span class="text">Czasem osoba z IT/działu odpowiedzialnego za narzędzia</span></li>
+    <li><span class="num">→</span><span class="text"><span class="pink">Maks. 5–7 osób na sesji</span> — inaczej chaos</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 13 — 4 zasady prowadzenia sesji                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Prowadzenie sesji mapującej</div>
+  <div class="big">4 zasady, których<br>nie wolno łamać</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Zadawaj <span class="pink">konkretne pytania</span>: "jak to wyglądało wczoraj?", nie "ogólnie jak działa?"</span></li>
+    <li><span class="num">02</span><span class="text">Pytaj o przypadki realne, nie hipotetyczne</span></li>
+    <li><span class="num">03</span><span class="text">Wyciągaj workaroundy: "a co robisz, jak coś nie działa?"</span></li>
+    <li><span class="num">04</span><span class="text">Słuchaj kontrowersji w grupie — to są najcenniejsze momenty</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 14 — Dwie pułapki                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Czego się wystrzegać</div>
+  <div class="big">Dwie pułapki, które trzeba znać</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Ludzie chcą wyglądać dobrze → opowiadają wersję <span class="pink">"powinno być"</span></span></li>
+    <li><span class="num">02</span><span class="text">Ludzie się boją → przemilczają workaroundy</span></li>
+  </ul>
+  <div class="gap-big"></div>
+  <div class="small" style="max-width: 850px;">Twoje zadanie: stworzyć przestrzeń, w której ludzie powiedzą "robimy to po swojemu, bo system nie działa".</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 15 — Section title: 6 elementów czynności              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-section-title" data-act="Sekcja 2 · Teoria">
+  <div class="section-num">Część 2C</div>
+  <div class="huge">Co musimy wiedzieć<br>o każdej czynności</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 16 — 6 elementów                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Jednostka procesu</div>
+  <div class="big">Sześć elementów<br>każdej czynności</div>
+  <ul class="bullets" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2vh 3vw;">
+    <li><span class="num">01</span><span class="text">Nazwa / opis</span></li>
+    <li><span class="num">02</span><span class="text">Osoba odpowiedzialna</span></li>
+    <li><span class="num">03</span><span class="text">Czas trwania</span></li>
+    <li><span class="num">04</span><span class="text">Narzędzia używane</span></li>
+    <li><span class="num">05</span><span class="text">Input — co potrzebuje, żeby zacząć</span></li>
+    <li><span class="num">06</span><span class="text">Output — co z tego wychodzi</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 17 — Statement: bez 6 elementów                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-statement" data-act="Sekcja 2 · Teoria">
+  <div class="statement-text">
+    Bez tych 6 elementów<br>
+    <span class="hand-big" style="font-size: 1.1em;">nie zautomatyzujesz</span>
+  </div>
+  <div class="gap-big"></div>
+  <div class="medium dim" style="font-weight: 400; max-width: 900px;">
+    To jest jednostka procesu — minimalna porcja informacji.<br>
+    Brakujący element = automatyzacja, która nie ma jak się wpiąć w realny przepływ.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 18 — Compare: dobry vs zły opis czynności              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-compare" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Przykład czynności</div>
+  <div class="big">Dobry vs zły opis</div>
+  <div class="compare">
+    <div class="compare-box left">
+      <div class="compare-label">Źle</div>
+      <div class="compare-title" style="font-size: clamp(1.4rem, 2.4vw, 2rem);">"Obsługa leadów"</div>
+      <div class="compare-desc">Niczego nie wiesz. Nie zaprojektujesz pod to żadnej automatyzacji.</div>
+    </div>
+    <div class="compare-box right">
+      <div class="compare-label">Dobrze</div>
+      <div class="compare-title" style="font-size: clamp(1.1rem, 1.7vw, 1.4rem); line-height: 1.4;">
+        Pierwszy kontakt<br>telefoniczny z leadem
+      </div>
+      <div class="compare-desc" style="font-size: clamp(0.85rem, 1.2vw, 1rem); opacity: 1;">
+        <strong>Kto:</strong> Handlowiec<br>
+        <strong>Czas:</strong> ~10 min/lead<br>
+        <strong>Narzędzia:</strong> Telefon, Pipedrive, notatnik<br>
+        <strong>Input:</strong> Lead z formularza WWW<br>
+        <strong>Output:</strong> Notatka w CRM + decyzja kwalifikacji
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 19 — Jak zbierać informacje                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Praktyka warsztatu</div>
+  <div class="big">Jak zbierać te informacje<br>na warsztacie</div>
+  <ul class="bullets">
+    <li><span class="num">→</span><span class="text">Tabela na ekranie podczas rozmowy</span></li>
+    <li><span class="num">→</span><span class="text">Pytania prosto z 6 elementów: "Kto to robi?", "Ile to zajmuje?", "Czego potrzebujesz, żeby zacząć?"</span></li>
+    <li><span class="num">→</span><span class="text"><span class="pink">Nie zostawiaj niewypełnionych pól</span> — wracaj do pytań</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 20 — Section title: Czankowanie                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-section-title" data-act="Sekcja 2 · Teoria">
+  <div class="section-num">Część 2D</div>
+  <div class="huge">Jak czankować procesy</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 21 — Trzy poziomy widoku                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Czankowanie procesów</div>
+  <div class="big">Trzy poziomy widoku</div>
+  <ul class="bullets">
+    <li><span class="num">↑</span><span class="text"><strong class="pink">Lot ptaka:</strong> wszystkie procesy w firmie (sprzedaż, realizacja, obsługa, finanse, HR)</span></li>
+    <li><span class="num">→</span><span class="text"><strong class="pink">Środek:</strong> podprocesy — np. "sprzedaż" → lead, kwalifikacja, oferta, sprzedaż, onboarding</span></li>
+    <li><span class="num">↓</span><span class="text"><strong class="pink">Dno:</strong> czynności — każdy podproces ma 5–15 czynności</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 22 — Pyramid: od lotu ptaka do dna                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-pyramid" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Wizualizacja czankowania</div>
+  <div class="big">Od lotu ptaka<br>do dna procesu</div>
+  <div class="pyramid">
+    <div class="pyramid-level">
+      <div class="lvl-title">FIRMA</div>
+      <div class="lvl-desc">Cała organizacja</div>
+    </div>
+    <div class="pyramid-level">
+      <div class="lvl-title">PROCESY</div>
+      <div class="lvl-desc">Sprzedaż · Realizacja · Obsługa · Finanse · HR</div>
+    </div>
+    <div class="pyramid-level">
+      <div class="lvl-title">PODPROCESY</div>
+      <div class="lvl-desc">Lead → Kwalifikacja → Oferta → Sprzedaż → Onboarding</div>
+    </div>
+    <div class="pyramid-level">
+      <div class="lvl-title">CZYNNOŚCI</div>
+      <div class="lvl-desc">Konkretne kroki (5–15 na podproces)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 23 — Jak głęboko schodzić                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Głębokość mapowania</div>
+  <div class="big">Jak głęboko schodzić</div>
+  <ul class="bullets">
+    <li><span class="num">→</span><span class="text">Tak głęboko, żeby zobaczyć powtarzalność i wąskie gardła</span></li>
+    <li><span class="num">→</span><span class="text">Za płytko = nic nie zrozumiesz</span></li>
+    <li><span class="num">→</span><span class="text">Za głęboko = utoniesz w detalach</span></li>
+  </ul>
+  <div class="gap-big"></div>
+  <div class="small pink" style="max-width: 850px; font-style: italic;">
+    Sygnał, że schodzisz za głęboko: "to zależy od przypadku" zaczyna padać częściej niż "robimy to tak".
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 24 — Gdzie zatrzymać czankowanie                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Kiedy przestać</div>
+  <div class="big">Gdzie zatrzymać<br>czankowanie</div>
+  <ul class="bullets">
+    <li><span class="num">→</span><span class="text">Gdy widzisz <span class="pink">wąskie gardła</span></span></li>
+    <li><span class="num">→</span><span class="text">Gdy widzisz <span class="pink">powtarzalność</span></span></li>
+    <li><span class="num">→</span><span class="text">Gdy widzisz, gdzie tracisz czas / pieniądze</span></li>
+  </ul>
+  <div class="gap-big"></div>
+  <div class="small" style="max-width: 800px;">Wszystko głębiej to już szczegół wykonawczy — nie potrzebujesz go do automatyzacji.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 25 — Statement: Złota zasada                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-statement" data-act="Sekcja 2 · Teoria">
+  <div class="statement-text">
+    Zmapuj <span class="hand-big" style="font-size: 1.15em;">tyle, ile potrzebujesz</span>,<br>
+    żeby podjąć decyzje.
+  </div>
+  <div class="gap-big"></div>
+  <div class="medium dim" style="font-weight: 400;">Ani więcej, ani mniej.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 26 — Section title: AI w mapowaniu                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-section-title" data-act="Sekcja 2 · Teoria">
+  <div class="section-num">Część 2E</div>
+  <div class="huge">Jak AI zmienia<br>mapowanie procesów</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 27 — Compare: stary vs nowy sposób                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-compare" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Przed AI vs Z AI</div>
+  <div class="big">Stary vs nowy sposób</div>
+  <div class="compare">
+    <div class="compare-box left">
+      <div class="compare-label">Przed AI</div>
+      <div class="compare-title" style="font-size: clamp(1.2rem, 1.8vw, 1.5rem);">1–2 dni roboczych<br>na jeden proces</div>
+      <div class="compare-desc" style="font-size: clamp(0.85rem, 1.2vw, 1rem); opacity: 1;">
+        • Warsztat 2–3h<br>
+        • Spisywanie notatek ręcznie<br>
+        • Rysowanie diagramu w Miro/Lucidchart<br>
+        • 5–8h pracy po warsztacie
+      </div>
+    </div>
+    <div class="compare-box right">
+      <div class="compare-label">Z AI</div>
+      <div class="compare-title" style="font-size: clamp(1.2rem, 1.8vw, 1.5rem);">2–4h pracy<br>zamiast 1–2 dni</div>
+      <div class="compare-desc" style="font-size: clamp(0.85rem, 1.2vw, 1rem); opacity: 1;">
+        • Warsztat 2–3h (ten sam)<br>
+        • Auto-transkrypcja nagrania<br>
+        • AI generuje wstępny opis<br>
+        • Ty czyścisz, AI robi wizualizację
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 28 — Co się zmieniło — clue (statement)               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-statement" data-act="Sekcja 2 · Teoria">
+  <div class="statement-text">
+    Twoja wartość to<br>
+    <span class="hand-big" style="font-size: 1.1em;">jakość rozmowy</span><br>
+    z ludźmi
+  </div>
+  <div class="gap-big"></div>
+  <div class="medium dim" style="font-weight: 400; max-width: 900px;">
+    Nie ładny diagram. Wizualizację zrobi AI.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 29 — Pusty slajd przejściowy "co się zmieniło"        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Co się zmieniło</div>
+  <div class="big">Nie chodzi już<br>o klejenie diagramów</div>
+  <ul class="bullets">
+    <li><span class="num">✗</span><span class="text">Nie kleisz kafelków w Miro przez 5 godzin</span></li>
+    <li><span class="num">✓</span><span class="text">Zbierasz <span class="pink">kluczowe informacje</span> od ludzi</span></li>
+    <li><span class="num">✓</span><span class="text">Wizualizację robi AI w 30 sekund</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 30 — Tools: Konkretne narzędzia AI                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-tools" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Stack AI</div>
+  <div class="big">Konkretne narzędzia AI<br>w mapowaniu</div>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-category">Nagrywanie</div>
+      <div class="tool-names">Fireflies · tl;dv · Otter · Read.ai</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Transkrypcja</div>
+      <div class="tool-names">Wbudowane + Whisper</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Generowanie opisów</div>
+      <div class="tool-names">ChatGPT · Claude</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Wizualizacje</div>
+      <div class="tool-names">Claude (Excalidraw, Mermaid) · Eraser.io · Whimsical AI</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Edycja diagramów</div>
+      <div class="tool-names">Excalidraw · draw.io</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 31 — Twój workflow na 2026                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Krok po kroku</div>
+  <div class="big">Twój workflow<br>na 2026</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Zorganizuj warsztat z odpowiednimi ludźmi</span></li>
+    <li><span class="num">02</span><span class="text">Nagrywaj spotkanie (z zgodą)</span></li>
+    <li><span class="num">03</span><span class="text">AI: transkrypcja + wstępny opis</span></li>
+    <li><span class="num">04</span><span class="text">Wyczyść i uzupełnij <span class="pink">ręcznie</span></span></li>
+    <li><span class="num">05</span><span class="text">Wygeneruj wizualizację z AI</span></li>
+    <li><span class="num">06</span><span class="text">Pokaż klientowi/zespołowi do weryfikacji</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 32 — Czego AI NIE zrobi                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Sekcja 2 · Teoria">
+  <div class="eyebrow">Granica AI</div>
+  <div class="big">Czego AI <span class="pink">NIE zrobi</span><br>za ciebie</div>
+  <ul class="bullets">
+    <li><span class="num">✗</span><span class="text">Nie zada dobrych pytań na warsztacie</span></li>
+    <li><span class="num">✗</span><span class="text">Nie wyczuje napięć w zespole</span></li>
+    <li><span class="num">✗</span><span class="text">Nie wyciągnie workaroundów z ludzi</span></li>
+    <li><span class="num">✗</span><span class="text">Nie podejmie decyzji "co automatyzować"</span></li>
+  </ul>
+  <div class="gap-big"></div>
+  <div class="small pink" style="max-width: 800px; font-style: italic;">
+    AI to wzmacniacz twojej pracy, nie zamiennik.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 33 — Plansza: warsztat na żywo                         -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Warsztat live">
+  <div class="transition-eyebrow">Teraz</div>
+  <div class="transition-text">Warsztat<br>na żywo</div>
+  <div class="transition-sub">
+    Symulacja sesji mapującej z właścicielem agencji marketingowej.<br>
+    Mikołaj wciela się w klienta. Julia prowadzi rozmowę.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 34 — Plansza: od rozmowy do opisu                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Warsztat live">
+  <div class="transition-eyebrow">Po warsztacie</div>
+  <div class="transition-text">Od rozmowy<br>do opisu procesu</div>
+  <div class="transition-sub">
+    Pokazujemy, jak wygląda wsad, który powstaje z takiej rozmowy.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 35 — Case Study #1: tytułówka                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Case #1 · Agencja">
+  <div class="transition-eyebrow">Case Study #1</div>
+  <div class="transition-text">Agencja<br>marketingowa</div>
+  <div class="transition-sub">
+    ~15 osób · proces sprzedażowy · lead → realizacja<br>
+    <span style="opacity: 0.7;">Zanonimizowane doświadczenia z NoCodeWork</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 36 — Case #1 Krok 1: opis słowny (text fragment)      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-text-fragment" data-act="Case #1 · Agencja">
+  <div class="eyebrow">Krok 1</div>
+  <div class="big">Tak wygląda wsad<br>po rozmowie z klientem</div>
+  <div class="fragment-card">
+    <div class="fragment-text">
+      "No więc leady przychodzą z różnych miejsc. Mamy formularz na stronie, ale szczerze — większość przychodzi z poleceń. Ktoś do kogoś zagada, tamten pisze na maila albo na Messengera. Czasem wpada coś z Facebooka, bo Kasia puszcza kampanie leadowe, ale to też ląduje na różnych mailach — raz na info@, raz na mój prywatny, raz Kasia dostaje bezpośrednio…"
+    </div>
+    <div class="fragment-source">— Marek, właściciel agencji "BrandUp"</div>
+  </div>
+  <div class="fragment-comment">To NIE jest jeszcze diagram — to jest <span class="pink">tekst, opowieść</span>.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 37 — Case #1 Krok 2: tabela czynności                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-text-fragment" data-act="Case #1 · Agencja">
+  <div class="eyebrow">Krok 2</div>
+  <div class="big">Tabela czynności</div>
+  <div class="fragment-card">
+    <div class="fragment-text" style="font-style: normal; font-family: 'SF Mono', Menlo, monospace; font-size: clamp(0.75rem, 1.1vw, 0.95rem); line-height: 1.6;">
+      <strong style="color: var(--pink);">6 podprocesów × ~22 czynności</strong><br><br>
+      1. Pozyskanie leada (4 czynności)<br>
+      2. Kwalifikacja (3 czynności)<br>
+      3. Przygotowanie oferty (4 czynności)<br>
+      4. Follow-up i zamknięcie (3 czynności)<br>
+      5. Onboarding (5 czynności)<br>
+      6. Przekazanie do realizacji (3 czynności)
+    </div>
+  </div>
+  <div class="fragment-comment">
+    Każda czynność z 6 elementami: <span class="pink">kto, czas, narzędzia, input, output</span>.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 38 — Case #1 Krok 3: AS-IS flowchart                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #1 · Agencja">
+  <div class="diagram-title">Krok 3 · Wizualizacja AS-IS (flowchart)</div>
+  <img src="diagrams/diagram-cs1-agencja.png" alt="AS-IS flowchart agencji" class="diagram-img">
+  <div class="diagram-comment">Wygenerowane z opisu w 30 sekund.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 39 — Case #1 Krok 4: BPMN 2.0                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #1 · Agencja">
+  <div class="diagram-title">Krok 4 · BPMN 2.0 — formalnie</div>
+  <img src="diagrams/diagram-cs1-agencja-bpmn.png" alt="BPMN 2.0 agencji" class="diagram-img">
+  <div class="diagram-comment">Ten sam proces w standardzie BPMN 2.0 — swimlanes, bramki decyzyjne. Wybór formatu zależy od odbiorcy.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 40 — Case #1 Krok 5: wąskie gardła                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Case #1 · Agencja">
+  <div class="eyebrow">Krok 5</div>
+  <div class="big">4 wąskie gardła<br>w agencji</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Notatki w Sheets — niespójne, gubione</span></li>
+    <li><span class="num">02</span><span class="text">Wycena zatyka się <span class="pink">u właściciela</span> (2–3 dni)</span></li>
+    <li><span class="num">03</span><span class="text">Brak systemu follow-upów — handlowcy "tracą" klientów</span></li>
+    <li><span class="num">04</span><span class="text">Zbieranie dostępów = ping-pong mailowy 2 tygodnie</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 41 — Case #1 Krok 6: TO-BE                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #1 · Agencja">
+  <div class="diagram-title">Krok 6 · Z AS-IS na TO-BE</div>
+  <img src="diagrams/diagram-cs1-agencja-tobe.png" alt="TO-BE agencji" class="diagram-img">
+  <div class="diagram-comment">Różowe = w pełni zautomatyzowane. Jasne = manualne (i dlaczego zostały).</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 42 — Case #1 Krok 7: dobór narzędzi (3×2 symetria)    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-tools" data-act="Case #1 · Agencja">
+  <div class="eyebrow">Krok 7</div>
+  <div class="big">Dobór narzędzi</div>
+  <div class="tools-grid" style="grid-template-columns: repeat(3, 1fr); max-width: 900px;">
+    <div class="tool-card">
+      <div class="tool-category">Automatyzacja</div>
+      <div class="tool-names">Make</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">CRM</div>
+      <div class="tool-names">Pipedrive</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Spotkania</div>
+      <div class="tool-names">Calendly</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Nagrania</div>
+      <div class="tool-names">Fireflies</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Podpisy</div>
+      <div class="tool-names">Autenti</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">AI</div>
+      <div class="tool-names">ChatGPT</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 43 — Case #1 Krok 8: AS-IS vs TO-BE side by side       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #1 · Agencja">
+  <div class="diagram-title">Krok 8 · Porównanie AS-IS vs TO-BE</div>
+  <div class="diagram-2up">
+    <div>
+      <div class="diagram-label">AS-IS (BPMN)</div>
+      <img src="diagrams/diagram-cs1-agencja-bpmn.png" alt="AS-IS BPMN" class="diagram-img" style="max-height: 55vh;">
+    </div>
+    <div>
+      <div class="diagram-label">TO-BE</div>
+      <img src="diagrams/diagram-cs1-agencja-tobe.png" alt="TO-BE" class="diagram-img" style="max-height: 55vh;">
+    </div>
+  </div>
+  <div class="diagram-comment">"Aha, teraz rozumiem" — moment, w którym klient łapie wartość.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 44 — Case Study #2: tytułówka                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Case #2 · E-commerce">
+  <div class="transition-eyebrow">Case Study #2</div>
+  <div class="transition-text">E-commerce —<br>logistyka i zapasy</div>
+  <div class="transition-sub">
+    Własny magazyn · Allegro + Shopify · ~500 SKUs<br>
+    <span style="opacity: 0.7;">Inna branża, inne wyzwania, ten sam framework</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 45 — Case #2 Krok 0: opis                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-text-fragment" data-act="Case #2 · E-commerce">
+  <div class="eyebrow">Tym razem</div>
+  <div class="big">Startujemy<br>od opisu</div>
+  <div class="fragment-card">
+    <div class="fragment-text">
+      "Rano, jak zaczynam dzień, to pierwsza rzecz — otwieram Excela ze stanami. Ale tak naprawdę to Google Sheet, bo Kasia też musi mieć dostęp. Problem w tym, że te dane nie zawsze są aktualne. Kasia aktualizuje po przyjęciu dostawy, ale jak jest dużo wysyłek, to robi to dopiero następnego dnia…"
+    </div>
+    <div class="fragment-source">— Marek, właściciel "GreenNest"</div>
+  </div>
+  <div class="fragment-comment">Już wiemy jak rozmawiać. Pokazujemy, <span class="pink">co dalej</span>.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 46 — Case #2 AS-IS                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #2 · E-commerce">
+  <div class="diagram-title">Wizualizacja AS-IS · 6 podprocesów</div>
+  <img src="diagrams/diagram-cs2-ecommerce.png" alt="AS-IS e-commerce" class="diagram-img">
+  <div class="diagram-comment">Monitorowanie → Analiza → Porównanie → Zamówienie → Przyjęcie → Obsługa braków</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 47 — Case #2 BPMN                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #2 · E-commerce">
+  <div class="diagram-title">BPMN 2.0 · z side flow problemowym</div>
+  <img src="diagrams/diagram-cs2-ecommerce-bpmn.png" alt="BPMN e-commerce" class="diagram-img">
+  <div class="diagram-comment">Side flow: zamówienie klienta → brak towaru → anulowanie</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 48 — Case #2 wąskie gardła                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Case #2 · E-commerce">
+  <div class="eyebrow">Wąskie gardła</div>
+  <div class="big">4 punkty bólu<br>w e-commerce</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Ręczne porównanie stanów Allegro/Shopify/Sheets</span></li>
+    <li><span class="num">02</span><span class="text">Ustalanie ilości <span class="pink">"na oko"</span></span></li>
+    <li><span class="num">03</span><span class="text">Porównywanie cen 3 hurtowni manualnie</span></li>
+    <li><span class="num">04</span><span class="text">Wykrywanie braków <span class="pink">DOPIERO po zamówieniu klienta</span></span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 49 — Case #2 TO-BE                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #2 · E-commerce">
+  <div class="diagram-title">TO-BE · Co zostaje człowiekowi</div>
+  <img src="diagrams/diagram-cs2-ecommerce-tobe.png" alt="TO-BE e-commerce" class="diagram-img">
+  <div class="diagram-comment">Większość → automat. Ręcznie: weryfikacja sugestii, decyzja o hurtowni, fizyczny odbiór.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 50 — Case #2 narzędzia                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-tools" data-act="Case #2 · E-commerce">
+  <div class="eyebrow">Stack</div>
+  <div class="big">Narzędzia</div>
+  <div class="tools-grid">
+    <div class="tool-card">
+      <div class="tool-category">Multikanałowość</div>
+      <div class="tool-names">BaseLinker</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Automatyzacja</div>
+      <div class="tool-names">Make · n8n</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Skrypty</div>
+      <div class="tool-names">Apps Script</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Powiadomienia</div>
+      <div class="tool-names">Slack</div>
+    </div>
+    <div class="tool-card">
+      <div class="tool-category">Dane</div>
+      <div class="tool-names">Google Sheets</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 51 — Case #2 porównanie                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-diagram" data-act="Case #2 · E-commerce">
+  <div class="diagram-title">Porównanie AS-IS vs TO-BE</div>
+  <div class="diagram-2up">
+    <div>
+      <div class="diagram-label">AS-IS</div>
+      <img src="diagrams/diagram-cs2-ecommerce.png" alt="AS-IS" class="diagram-img" style="max-height: 55vh;">
+    </div>
+    <div>
+      <div class="diagram-label">TO-BE</div>
+      <img src="diagrams/diagram-cs2-ecommerce-tobe.png" alt="TO-BE" class="diagram-img" style="max-height: 55vh;">
+    </div>
+  </div>
+  <div class="diagram-comment">Z 1–2h dziennie ręcznego klikania → <span class="pink">5 min weryfikacji</span>.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 52 — Wnioski z dwóch case'ów                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Wnioski">
+  <div class="eyebrow">Co łączy oba przypadki</div>
+  <div class="big">Wnioski z dwóch<br>case'ów</div>
+  <ul class="bullets">
+    <li><span class="num">→</span><span class="text"><span class="pink">80% wartości</span> daje ~20% kluczowych automatyzacji</span></li>
+    <li><span class="num">→</span><span class="text">Nie automatyzujemy wszystkiego — decyzje zostają człowiekowi</span></li>
+    <li><span class="num">→</span><span class="text">Zaczynamy od mapowania, <span class="pink">nie od narzędzi</span></span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 53 — Section title: Podsumowanie                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-section-title" data-act="Podsumowanie">
+  <div class="section-num">Sekcja 6</div>
+  <div class="huge">Podsumowanie</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 54 — Główna myśl                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-statement" data-act="Podsumowanie">
+  <div class="statement-text">
+    Mapowanie procesów<br>
+    to nie technologia.<br>
+    To <span class="hand-big" style="font-size: 1.2em;">rozmowa</span> z ludźmi.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 55 — 5 zasad                                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Podsumowanie">
+  <div class="eyebrow">Nie wolno łamać</div>
+  <div class="big">5 zasad</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Zawsze AS-IS przed TO-BE</span></li>
+    <li><span class="num">02</span><span class="text">Mapuj z ludźmi, którzy realnie wykonują proces</span></li>
+    <li><span class="num">03</span><span class="text">Pytaj o realne przypadki, nie o "jak powinno być"</span></li>
+    <li><span class="num">04</span><span class="text">Każda czynność = <span class="pink">6 elementów</span></span></li>
+    <li><span class="num">05</span><span class="text">Zatrzymaj się przy wąskich gardłach — głębiej nie musisz</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 56 — 5 najczęstszych błędów                            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Podsumowanie">
+  <div class="eyebrow">Czego unikać</div>
+  <div class="big">5 najczęstszych błędów</div>
+  <ul class="bullets">
+    <li><span class="num">✗</span><span class="text">Mapowanie tylko z właścicielem (bez zespołu)</span></li>
+    <li><span class="num">✗</span><span class="text">Pomijanie AS-IS, od razu projektowanie "jak powinno być"</span></li>
+    <li><span class="num">✗</span><span class="text">Mapowanie wszystkiego naraz</span></li>
+    <li><span class="num">✗</span><span class="text">Klejenie diagramu zamiast rozmowy</span></li>
+    <li><span class="num">✗</span><span class="text">Automatyzowanie bez zrozumienia procesu</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 57 — Od czego zacząć jutro                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Podsumowanie">
+  <div class="eyebrow">Akcja</div>
+  <div class="big">Od czego zacząć jutro</div>
+  <ul class="bullets">
+    <li><span class="num">01</span><span class="text">Wybierz <span class="pink">JEDEN</span> proces</span></li>
+    <li><span class="num">02</span><span class="text">Umów warsztat 2h z 3–5 osobami</span></li>
+    <li><span class="num">03</span><span class="text">Nagraj rozmowę</span></li>
+    <li><span class="num">04</span><span class="text">Zrób tabelę 6-elementową dla każdej czynności</span></li>
+    <li><span class="num">05</span><span class="text">Wygeneruj wizualizację z AI</span></li>
+    <li><span class="num">06</span><span class="text">Pokaż zespołowi do weryfikacji</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 58 — Co czytać dalej                                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-bullets" data-act="Podsumowanie">
+  <div class="eyebrow">Materiały</div>
+  <div class="big">Co czytać dalej</div>
+  <ul class="bullets">
+    <li><span class="num">📖</span><span class="text"><strong>The Lean Startup</strong> — Eric Ries (perspektywa MVP w procesach)</span></li>
+    <li><span class="num">📖</span><span class="text"><strong>BPMN Method and Style</strong> — Bruce Silver</span></li>
+    <li><span class="num">📖</span><span class="text"><strong>Process Mapping for Dummies</strong> — start dla zielonych</span></li>
+    <li><span class="num">🔗</span><span class="text">Blog <span class="pink">NoCodeWork</span> — case studies z realnych wdrożeń</span></li>
+    <li><span class="num">🔗</span><span class="text">Społeczność <span class="pink">AIbiz</span> — Akademia Automatyzacji</span></li>
+  </ul>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 59 — Jedno zdanie do zapamiętania                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Podsumowanie">
+  <div class="transition-eyebrow">Jedno zdanie</div>
+  <div class="transition-text">
+    Nie automatyzuj <span style="font-family: 'MBJ Handwriting'; font-size: 1.1em;">chaosu</span>.<br>
+    Zmapuj go najpierw.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 60 — Q&A intro                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-section-title" data-act="Q&A">
+  <div class="section-num">Sekcja 7</div>
+  <div class="huge">Q&amp;A</div>
+  <div class="gap-big"></div>
+  <div class="medium" style="color: rgba(255,255,255,0.85); font-weight: 400; max-width: 800px;">
+    12 pytań od społeczności. Pogrupowane tematycznie. Lecimy.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 61 — Blok 1: Red flagi i quick wins                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Q&A · Blok 1">
+  <div class="transition-eyebrow">Blok 1</div>
+  <div class="transition-text">Red flagi<br>i quick wins</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 62 — Pytanie 4: red flagi                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 1">
+  <div class="qa-block">Blok 1 · Red flagi</div>
+  <div class="qa-author">Paweł Pastuszka</div>
+  <div class="qa-question">Czego się wystrzegać podczas mapowania? Jakie są czerwone flagi?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 63 — Pytanie 5: quick wins                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 1">
+  <div class="qa-block">Blok 1 · Quick wins</div>
+  <div class="qa-author">Paweł Pastuszka</div>
+  <div class="qa-question">Co jest szybkie i opłacalne — gdzie szukać quick wins?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 64 — Blok 2: Porażki                                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Q&A · Blok 2">
+  <div class="transition-eyebrow">Blok 2</div>
+  <div class="transition-text">Porażki<br>i lekcje</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 65 — Pytanie 6: porażki                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 2">
+  <div class="qa-block">Blok 2 · Porażki</div>
+  <div class="qa-author">Michał Paczuła</div>
+  <div class="qa-question">Projekty, które się nie udały — dlaczego?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 66 — Blok 3: Architektura                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Q&A · Blok 3">
+  <div class="transition-eyebrow">Blok 3</div>
+  <div class="transition-text">Architektura<br>i utrzymanie</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 67 — Pytanie 7: architektura                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 3">
+  <div class="qa-block">Blok 3 · Architektura</div>
+  <div class="qa-author">Dawid Posała</div>
+  <div class="qa-question">Na jakiej podstawie dobieracie architekturę rozwiązań?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 68 — Pytanie 8: koszty utrzymania                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 3">
+  <div class="qa-block">Blok 3 · Koszty</div>
+  <div class="qa-author">Dawid Posała</div>
+  <div class="qa-question">Jak szacujecie koszty utrzymania?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 69 — Pytanie 9: rozbudowa                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 3">
+  <div class="qa-block">Blok 3 · Rozbudowa</div>
+  <div class="qa-author">Dawid Posała</div>
+  <div class="qa-question">Jak projektujecie pod łatwą rozbudowę?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 70 — Pytanie 10: odbiory i testy                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 3">
+  <div class="qa-block">Blok 3 · Odbiory</div>
+  <div class="qa-author">Dawid Posała</div>
+  <div class="qa-question">Odbiory, testy, czas zgłaszania błędów — jak się umawiacie?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 71 — Blok 4: Wycena                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Q&A · Blok 4">
+  <div class="transition-eyebrow">Blok 4</div>
+  <div class="transition-text">Wycena<br>i model biznesowy</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 72 — Pytanie 1: wycena                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 4">
+  <div class="qa-block">Blok 4 · Wycena</div>
+  <div class="qa-author">Maciej Szczęsny</div>
+  <div class="qa-question">Wycena automatyzacji — abonament miesięczny czy jednorazowo?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 73 — Pytanie 2: klient wraca                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 4">
+  <div class="qa-block">Blok 4 · Scope creep</div>
+  <div class="qa-author">Maciej Szczęsny</div>
+  <div class="qa-question">Klient wraca po 3 miesiącach z wymaganiami za darmo — jak podejść?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 74 — Blok 5: Prawne                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-transition" data-act="Q&A · Blok 5">
+  <div class="transition-eyebrow">Blok 5</div>
+  <div class="transition-text">Zabezpieczenie<br>prawne</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 75 — Pytanie 3: prawne                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-qa" data-act="Q&A · Blok 5">
+  <div class="qa-block">Blok 5 · Prawne</div>
+  <div class="qa-author">Maciej Szczęsny</div>
+  <div class="qa-question">Czy przy wdrożeniu automatyzacji trzeba się zabezpieczać prawnie?</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SLAJD 76 — Slajd zamykający                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide slide-hero" data-act="">
+  <img src="assets/nocodework-logo-white.svg" alt="NoCodeWork" class="hero-logo">
+
+  <div class="huge">
+    <span class="hand-big">Dziękujemy</span><br>
+    za uwagę
+  </div>
+
+  <div class="gap-big"></div>
+
+  <div class="medium dim" style="font-weight: 400;">
+    Powodzenia z mapowaniem!
+  </div>
+
+  <div class="author-row">
+    <strong style="color: var(--white);">nocodework.io</strong>
+    <span class="sep">·</span>
+    Społeczność AIbiz — Akademia Automatyzacji
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- FOOTER (renderowany przez JS na każdym slajdzie)            -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<footer class="footer" id="footer">
+  <div class="footer-left">
+    <img src="assets/nocodework-logo-white.svg" alt="NoCodeWork" class="nocodework-logo">
+  </div>
+  <div class="footer-center" id="footer-center">
+    Warsztat AIbiz · Mapowanie procesów
+  </div>
+  <div class="footer-right">
+    <img src="assets/logo-aibiz.png" alt="AIbiz" class="aibiz-logo">
+    <span class="slide-num" id="slide-num">1 / 5</span>
+  </div>
+</footer>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideNumEl = document.getElementById('slide-num');
+  const progressEl = document.getElementById('progress');
+  let current = 0;
+
+  function showSlide(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateProgress();
+    updateMeta();
+  }
+
+  function updateProgress() {
+    const pct = slides.length > 1
+      ? (current / (slides.length - 1)) * 100
+      : 100;
+    progressEl.style.width = pct + '%';
+  }
+
+  function updateMeta() {
+    slideNumEl.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault();
+      showSlide(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      showSlide(current - 1);
+    } else if (e.key === 'Home') {
+      showSlide(0);
+    } else if (e.key === 'End') {
+      showSlide(slides.length - 1);
+    } else if (e.key === 'f' || e.key === 'F') {
+      toggleFullscreen();
+    } else if (e.key === 'h' || e.key === 'H') {
+      document.body.classList.toggle('hide-ui');
+    }
+  });
+
+  // Auto-hide UI po wejściu w fullscreen
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      document.body.classList.add('hide-ui');
+    } else {
+      document.body.classList.remove('hide-ui');
+    }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  document.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff < 0) showSlide(current + 1);
+      else showSlide(current - 1);
+    }
+  });
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  // Init
+  updateProgress();
+  updateMeta();
+</script>
+
+</body>
+</html>

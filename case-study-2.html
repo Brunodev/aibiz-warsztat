@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Case Study #2: E-commerce GreenNest — Warsztat AIbiz</title>
+<meta name="description" content="E-commerce GreenNest — logistyka i zarządzanie zapasami. Case study z warsztatu AIbiz.">
+<link rel="icon" type="image/png" href="assets/logo-aibiz.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+
+<header class="top-bar">
+  <a href="index.html" class="brand">
+    <img src="assets/logo-aibiz.png" alt="AIbiz">
+    <div class="brand-text">
+      <strong>AIbiz</strong>
+      <span>Akademia Automatyzacji</span>
+    </div>
+  </a>
+  <a href="index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Wróć do hubu
+  </a>
+</header>
+
+<section class="article-hero">
+  <span class="eyebrow">Case Study #2</span>
+  <h1>E-commerce GreenNest — logistyka i&nbsp;zarządzanie zapasami</h1>
+  <p class="subtitle">
+    Sklep z akcesoriami do domu i ogrodu, ~500 SKU, 3 kanały sprzedaży. Overselling na Allegro, Excel jako jedyny „system", właściciel jako wąskie gardło.
+  </p>
+  <div class="meta-pills">
+    <span class="pill">E-commerce</span>
+    <span class="pill">~500 SKU</span>
+    <span class="pill">Allegro + Shopify + OLX</span>
+    <span class="pill">3 hurtownie</span>
+  </div>
+</section>
+
+<article class="article">
+
+<blockquote>
+  <p><strong>Perspektywa:</strong> właściciel firmy (jednocześnie główna osoba decyzyjna i „system" w jednej osobie). <strong>Cel:</strong> pokazać chaos wynikający z ręcznego zarządzania zapasami w wielokanałowej sprzedaży.</p>
+</blockquote>
+
+<h2>Kontekst</h2>
+
+<p><strong>Firma:</strong> GreenNest — sklep e-commerce z akcesoriami do domu i ogrodu. Działa od 4 lat, zaczynał jako dropshipping, od ~1,5 roku ma własny magazyn (ok. 80 m²) na obrzeżach miasta.</p>
+
+<p><strong>Kanały sprzedaży:</strong></p>
+<ul>
+  <li>Allegro (główny kanał, ~60% przychodów)</li>
+  <li>Własny sklep na Shopify (~25% przychodów)</li>
+  <li>Sporadycznie OLX i sprzedaż B2B (~15%)</li>
+</ul>
+
+<p><strong>Asortyment:</strong> ~500 aktywnych SKU — od doniczek ceramicznych, przez oświetlenie ogrodowe, po meble balkonowe. Produkty w różnych wariantach (kolory, rozmiary).</p>
+
+<p><strong>Zespół logistyczny:</strong></p>
+<ul>
+  <li><strong>Marek</strong> (właściciel) — zamówienia u hurtowników, decyzje zakupowe, zarządzanie cenami</li>
+  <li><strong>Kasia</strong> (magazynier) — przyjęcia dostaw, pakowanie, wysyłka, inwentaryzacja</li>
+  <li><strong>Ania</strong> (na pół etatu) — obsługa klienta, wystawianie ofert na Allegro, aktualizacja opisów</li>
+</ul>
+
+<p><strong>Hurtownie:</strong></p>
+<ul>
+  <li>3 główne hurtownie (2 polskie, 1 czeska) + 1 dostawca okazjonalny z Chin</li>
+  <li>Każda ma inny cennik, czas dostawy, minimalne zamówienia</li>
+  <li>Brak API — wszystko przez strony www, katalogi PDF, maile</li>
+</ul>
+
+<div class="problem-card">
+  <h4>Główne problemy</h4>
+  <ul>
+    <li>Wyprzedaże produktów, których nie ma na stanie (overselling na Allegro → anulowane zamówienia → spadek oceny)</li>
+    <li>Zalegający towar — za dużo zamówionego, słabo rotuje</li>
+    <li>Marek spędza 1-2h dziennie na ręcznym sprawdzaniu stanów i porównywaniu cen hurtowni</li>
+    <li>Excel jest jedynym „systemem" — ale bywa nieaktualny o 1-2 dni</li>
+    <li>Kasia nie ma dostępu do pełnego obrazu — pakuje to, co jest na liście, ale nie wie co się kończy</li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<h2>Proces AS-IS — opis słowny</h2>
+
+<blockquote>
+  <p>Poniższy opis jest stylizowany na wypowiedź właściciela podczas warsztatu mapowania. Tak właśnie brzmi „surowy" opis procesu, zanim go ustrukturyzujemy.</p>
+</blockquote>
+
+<div class="narrative">
+  <span class="speaker">Marek, właściciel GreenNest</span>
+  <p>Rano, jak zaczynam dzień, to pierwsza rzecz — otwieram Excela ze stanami magazynowymi. Ale tak naprawdę to nie jest Excel, tylko Google Sheet, bo Kasia też musi mieć dostęp. Problem w tym, że te dane nie zawsze są aktualne. Kasia aktualizuje po przyjęciu dostawy, ale jak jest dużo wysyłek, to robi to dopiero następnego dnia.</p>
+  <p>Potem otwieram panel Allegro i patrzę, co się wczoraj sprzedało. Porównuję z tym, co mam w arkuszu. Jak widzę, że czegoś jest mało — powiedzmy, zostały 3 sztuki doniczki ceramicznej XL, a sprzedaje się 2-3 dziennie — to wiem, że muszę zamówić. Ale to ja „wiem", bo znam te produkty. Kasia i Ania tego nie widzą.</p>
+  <p>No i zaczyna się zabawa z hurtowniami. Wchodzę na stronę Hurtowni A, sprawdzam cenę, dostępność, minimalną ilość. Potem to samo na Hurtowni B. Czasem Hurtownia C ma lepszą cenę, ale dłuższy czas dostawy — i muszę zdecydować, czy mi się opłaca czekać 5 dni, czy wolę zapłacić więcej i mieć za 2 dni. To wszystko robię ręcznie, w głowie albo notuję na kartce.</p>
+  <p>Jak już wiem co i gdzie, to wysyłam maila z zamówieniem. Czasem dzwonię, bo mail idzie za wolno, a towar mi się kończy. Hurtownia odsyła potwierdzenie — czasem od razu, czasem po kilku godzinach. Jak potwierdzą, to wpisuję sobie w arkuszu: „zamówione, ETA piątek".</p>
+  <p>Jak dostawa przyjeżdża, Kasia przyjmuje, liczy, sprawdza z dokumentem dostawy. Jak się zgadza — aktualizuje arkusz. Jak czegoś brakuje albo jest uszkodzone — dzwoni do mnie i ja reklamuję.</p>
+  <p>Najgorsze jest to, co się dzieje, jak nie zdążę zamówić. Klient kupuje na Allegro, ja nie mam towaru, muszę anulować zamówienie. Allegro obniża mi ocenę. Albo szukam towaru „na szybko" — dzwonię po hurtowniach, pytam kto ma od ręki, płacę więcej. Stresujące.</p>
+  <p>Shopify jest trochę łatwiej, bo tam mogę schować produkt, jak się kończy. Ale na Allegro? Mam 200 aktywnych ofert i nie ogarniam ręcznie pilnować stanów na obu platformach. Miałem BaseLinker, ale go nie skonfigurowałem do końca — synchronizacja stanów działała częściowo, więc się na nim przejechałem i wyłączyłem.</p>
+</div>
+
+<!-- ═══════════ DIAGRAM 1: AS-IS ręczny ═══════════ -->
+<div class="diagram-block">
+  <div class="diagram-label">
+    <span class="title">Diagram 01 — Proces AS-IS (mapa ręczna)</span>
+    <span class="desc">Pierwsza wersja mapy procesu — surowa, ręczna, jak po pierwszej rozmowie z właścicielem</span>
+  </div>
+  <div class="diagram-placeholder">
+    <div class="icon-wrap">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+        <path d="M2 2l7.586 7.586"/>
+        <circle cx="11" cy="11" r="2"/>
+      </svg>
+    </div>
+    <div class="placeholder-title">Miejsce na diagram</div>
+    <div class="placeholder-note">Mapa procesu AS-IS w formie ręcznej (Excalidraw) — pokazuje wszystkie kroki dnia roboczego Marka</div>
+    <div class="file-name">diagrams/diagram-cs2-ecommerce.svg</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<h2>Proces AS-IS — tabela czynności</h2>
+
+<h3>1. Monitorowanie stanów magazynowych</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Czynność</th><th>Kto</th><th>Czas</th><th>Narzędzia</th><th>Output</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1.1</td><td>Otwarcie arkusza stanów i przegląd ilości</td><td>Marek</td><td>10 min</td><td>Google Sheets</td><td>Lista produktów ze stanami</td></tr>
+    <tr><td>1.2</td><td>Sprawdzenie wczorajszej sprzedaży w Allegro</td><td>Marek</td><td>10 min</td><td>Panel Allegro</td><td>Lista sprzedanych + ilości</td></tr>
+    <tr><td>1.3</td><td>Sprawdzenie wczorajszej sprzedaży w Shopify</td><td>Marek</td><td>5 min</td><td>Shopify Admin</td><td>Lista sprzedanych + ilości</td></tr>
+    <tr><td>1.4</td><td>Ręczne porównanie stanów ze sprzedażą — korekta rozbieżności</td><td>Marek</td><td>15 min</td><td>Sheets + Allegro + Shopify</td><td>Skorygowany arkusz</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>2. Analiza zapotrzebowania</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Czynność</th><th>Kto</th><th>Czas</th><th>Narzędzia</th><th>Output</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>2.1</td><td>Identyfikacja produktów z niskim stanem (na oko, próg w głowie)</td><td>Marek</td><td>10 min</td><td>Google Sheets</td><td>Lista do zamówienia (mentalna)</td></tr>
+    <tr><td>2.2</td><td>Oszacowanie ilości na podstawie „wyczucia" i sezonu</td><td>Marek</td><td>10 min</td><td>Doświadczenie + intuicja</td><td>Ilości do zamówienia (notatka)</td></tr>
+    <tr><td>2.3</td><td>Sprawdzenie czy coś nie zalega na magazynie (raz w tyg.)</td><td>Marek</td><td>15 min/tyg.</td><td>Google Sheets</td><td>Decyzja o promocji</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>3. Porównywanie ofert hurtowni</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Czynność</th><th>Kto</th><th>Czas</th><th>Narzędzia</th><th>Output</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>3.1</td><td>Wejście na stronę Hurtowni A — ceny i dostępność</td><td>Marek</td><td>15 min</td><td>Przeglądarka</td><td>Ceny Hurtownia A</td></tr>
+    <tr><td>3.2</td><td>Wejście na stronę Hurtowni B</td><td>Marek</td><td>15 min</td><td>Przeglądarka</td><td>Ceny Hurtownia B</td></tr>
+    <tr><td>3.3</td><td>Wejście na stronę Hurtowni C (+ czas dostawy)</td><td>Marek</td><td>15 min</td><td>Przeglądarka</td><td>Ceny + ETA Hurtownia C</td></tr>
+    <tr><td>3.4</td><td>Porównanie ofert i decyzja (cena vs czas vs minimum)</td><td>Marek</td><td>10 min</td><td>Kartka / głowa</td><td>Decyzja zakupowa</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>4. Zamawianie towaru</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Czynność</th><th>Kto</th><th>Czas</th><th>Narzędzia</th><th>Output</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>4.1</td><td>Napisanie maila/telefonu do hurtowni</td><td>Marek</td><td>10 min</td><td>Gmail / telefon</td><td>Wysłane zamówienie</td></tr>
+    <tr><td>4.2</td><td>Oczekiwanie na potwierdzenie</td><td>Marek</td><td>0,5-4h</td><td>Gmail</td><td>Potwierdzenie + ETA</td></tr>
+    <tr><td>4.3</td><td>Wpisanie zamówienia do arkusza</td><td>Marek</td><td>5 min</td><td>Google Sheets</td><td>Arkusz „zamówione"</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>5. Przyjęcie dostawy i aktualizacja</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Czynność</th><th>Kto</th><th>Czas</th><th>Narzędzia</th><th>Output</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>5.1</td><td>Przyjęcie dostawy — fizyczne sprawdzenie z dokumentem</td><td>Kasia</td><td>20-40 min</td><td>WZ, fizyczny towar</td><td>Zweryfikowana dostawa</td></tr>
+    <tr><td>5.2</td><td>Aktualizacja arkusza stanów</td><td>Kasia</td><td>10 min</td><td>Google Sheets</td><td>Zaktualizowany arkusz</td></tr>
+    <tr><td>5.3</td><td>Aktualizacja stanów na Allegro (ręczna zmiana w ofertach)</td><td>Ania / Marek</td><td>15-30 min</td><td>Panel Allegro</td><td>Oferty Allegro z aktualnymi stanami</td></tr>
+    <tr><td>5.4</td><td>Aktualizacja stanów w Shopify</td><td>Ania / Marek</td><td>10 min</td><td>Shopify Admin</td><td>Shopify z aktualnymi stanami</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>6. Obsługa braków i alertów</h3>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>#</th><th>Czynność</th><th>Kto</th><th>Czas</th><th>Narzędzia</th><th>Output</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>6.1</td><td>Odkrycie braku towaru (po sprzedaży / reklamacji)</td><td>Marek / Ania</td><td>—</td><td>Allegro / Shopify</td><td>Informacja o braku</td></tr>
+    <tr><td>6.2</td><td>Anulowanie zamówienia LUB szukanie towaru „na szybko"</td><td>Marek</td><td>15-30 min</td><td>Telefon / mail</td><td>Anulowane LUB awaryjne zamówienie</td></tr>
+    <tr><td>6.3</td><td>Kontakt z klientem — przeprosiny, alternatywa, zwrot</td><td>Ania</td><td>10 min</td><td>Allegro / mail</td><td>Klient poinformowany</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="problem-card">
+  <h4>Podsumowanie czasowe (dzień roboczy Marka)</h4>
+  <ul>
+    <li>Monitorowanie stanów: <strong>~40 min</strong></li>
+    <li>Analiza zapotrzebowania: <strong>~20 min</strong></li>
+    <li>Porównywanie hurtowni: <strong>~55 min</strong></li>
+    <li>Zamawianie: <strong>~15 min</strong> (+ oczekiwanie)</li>
+    <li>Aktualizacje po dostawie: <strong>~30 min</strong> (Marek nadzoruje)</li>
+    <li>Obsługa braków: <strong>~20 min</strong> (2-3x w tygodniu)</li>
+    <li><strong>Łącznie: ~2-3h dziennie</strong> — a powinien zajmować się rozwojem firmy</li>
+  </ul>
+</div>
+
+<!-- ═══════════ DIAGRAM 2: BPMN AS-IS ═══════════ -->
+<div class="diagram-block">
+  <div class="diagram-label">
+    <span class="title">Diagram 02 — Proces AS-IS w notacji BPMN</span>
+    <span class="desc">Ten sam proces uporządkowany w standardową notację BPMN — gotowy do prezentacji</span>
+  </div>
+  <div class="diagram-placeholder">
+    <div class="icon-wrap">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"/>
+        <rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/>
+      </svg>
+    </div>
+    <div class="placeholder-title">Miejsce na diagram BPMN</div>
+    <div class="placeholder-note">Proces logistyczny w notacji BPMN — swimlane'y per rola, eventy, gateway'e decyzyjne</div>
+    <div class="file-name">diagrams/diagram-cs2-ecommerce-bpmn.svg</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<h2>Wąskie gardła i problemy</h2>
+
+<div class="problem-card">
+  <h4>Dane i narzędzia</h4>
+  <ul>
+    <li><strong>Excel/Sheets jako jedyny „system"</strong> — brak integracji z platformami sprzedażowymi, dane nieaktualne o 1-2 dni</li>
+    <li><strong>Brak synchronizacji stanów Allegro ↔ Shopify</strong> — aktualizacja ręczna, podatna na błędy</li>
+    <li><strong>BaseLinker skonfigurowany połowicznie</strong> — Marek zaczął wdrażać ale nie dokończył; teraz boi się wrócić</li>
+  </ul>
+</div>
+
+<div class="problem-card">
+  <h4>Procesy decyzyjne</h4>
+  <ul>
+    <li><strong>Marek jako jedyna osoba która „wie" kiedy i ile zamówić</strong> — wiedza o progach i sezonowości w jego głowie</li>
+    <li><strong>Brak alertów</strong> — nikt nie dostaje powiadomienia że produkt schodzi poniżej bezpiecznego poziomu</li>
+    <li><strong>Decyzje „na wyczucie"</strong> — brak danych o velocity sprzedaży, brak historycznej analizy rotacji</li>
+    <li><strong>Brak klasyfikacji produktów</strong> — nie wiadomo które SKU to bestsellery, a które leżą miesiącami</li>
+  </ul>
+</div>
+
+<div class="problem-card">
+  <h4>Konsekwencje biznesowe</h4>
+  <ul>
+    <li><strong>Overselling na Allegro</strong> — 5-8 anulowanych zamówień miesięcznie, spadek oceny, ryzyko blokady konta</li>
+    <li><strong>Overstock</strong> — towar sezonowy (np. lampki solarne) blokuje kapitał i miejsce w magazynie</li>
+    <li><strong>Utracona sprzedaż</strong> — popularne produkty wyprzedane, Marek zauważa po 1-2 dniach</li>
+    <li><strong>Stres i wypalenie</strong> — Marek jest „wąskim gardłem"; jak zachoruje, nikt nie umie zamówić towaru</li>
+    <li><strong>Brak skalowalności</strong> — przy 500 SKU jest ciężko, przy 1000 będzie niemożliwe</li>
+  </ul>
+</div>
+
+<div class="problem-card">
+  <h4>Czas i powtarzalność</h4>
+  <ul>
+    <li><strong>1-2h dziennie na porównywanie cen</strong> — powtarzalna, manualna czynność idealna do automatyzacji</li>
+    <li><strong>Podwójna praca</strong> — aktualizacja stanów osobno w arkuszu, na Allegro, na Shopify</li>
+    <li><strong>Brak standaryzacji nazewnictwa</strong> — ten sam produkt ma inne nazwy w arkuszu, na Allegro i u hurtownika</li>
+  </ul>
+</div>
+
+<hr class="divider">
+
+<h2>Elementy do automatyzacji (AS-IS → TO-BE)</h2>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>Czynność (AS-IS)</th><th>Automatyzacja (TO-BE)</th><th>Jak to działa</th><th>Narzędzia</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Ręczne sprawdzanie stanów w arkuszu + na platformach</td><td>Automatyczna synchronizacja stanów między platformami</td><td>BaseLinker jako hub — stany aktualizują się real-time na Allegro i Shopify po każdej sprzedaży</td><td><strong>BaseLinker</strong></td></tr>
+    <tr><td>Porównywanie cen na stronach 3 hurtowni</td><td>Półautomatyczny scraping cen</td><td>Make pobiera ceny z hurtowni (web scraping / import CSV/PDF) i wrzuca do arkusza porównawczego</td><td><strong>Make + Sheets</strong></td></tr>
+    <tr><td>Decyzja „co zamówić" na podstawie wyczucia</td><td>Alert o niskim stanie + sugestia zamówienia</td><td>Gdy stan spada poniżej progu (np. zapas na 5 dni), automatyczny alert na Slacku/mailu z propozycją ilości</td><td><strong>Make + Slack/Gmail</strong></td></tr>
+    <tr><td>Brak wiedzy o velocity sprzedaży</td><td>Dashboard z rotacją produktów</td><td>Automatyczne obliczanie średniej dziennej sprzedaży per SKU — widoczne dla zespołu</td><td><strong>Sheets + Looker Studio</strong></td></tr>
+    <tr><td>Zamawianie mailem — ręczne pisanie</td><td>Wygenerowany draft zamówienia</td><td>Na podstawie alertu i arkusza — automatycznie generowany mail (ilości, ceny, dane), Marek zatwierdza</td><td><strong>Make + Gmail</strong></td></tr>
+    <tr><td>Ręczna aktualizacja arkusza po dostawie</td><td>Skan WZ → automatyczna aktualizacja</td><td>Kasia fotografuje WZ, OCR wyciąga dane, aktualizuje arkusz i stany w BaseLinker</td><td><strong>Make + Vision API + BaseLinker</strong></td></tr>
+    <tr><td>Brak klasyfikacji SKU</td><td>Automatyczna analiza ABC</td><td>Raz w tygodniu skrypt klasyfikuje produkty: A (top 20%), B (średnie), C (słabe)</td><td><strong>Sheets + Apps Script</strong></td></tr>
+    <tr><td>Brak alertów o oversellingu</td><td>Blokada oferty przy stanie = 0</td><td>BaseLinker automatycznie ukrywa ofertę gdy stan = 0 — zero anulowanych zamówień</td><td><strong>BaseLinker (reguła)</strong></td></tr>
+    <tr><td>Marek jako jedyny „decydent"</td><td>Udokumentowane reguły zamawiania</td><td>Progi minimalne, preferowani dostawcy per produkt, reguły sezonowe — w arkuszu, widoczne dla zespołu</td><td><strong>Sheets + Make</strong></td></tr>
+    <tr><td>Brak śledzenia zamówień u hurtowników</td><td>Tablica zamówień z ETA i statusami</td><td>Mail od hurtowni → parser → aktualizacja tablicy</td><td><strong>Make + Gmail parser + Sheets</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═══════════ DIAGRAM 3: TO-BE ═══════════ -->
+<div class="diagram-block">
+  <div class="diagram-label">
+    <span class="title">Diagram 03 — Proces TO-BE</span>
+    <span class="desc">Docelowa wersja procesu po automatyzacji — z BaseLinker jako hub</span>
+  </div>
+  <div class="diagram-placeholder">
+    <div class="icon-wrap">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <div class="placeholder-title">Miejsce na diagram TO-BE</div>
+    <div class="placeholder-note">Proces po automatyzacji — BaseLinker jako centrum, Make jako orchestrator, alerty zamiast ręcznego sprawdzania</div>
+    <div class="file-name">diagrams/diagram-cs2-ecommerce-tobe.svg</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<h2>Priorytety wdrożenia</h2>
+
+<p>Nie wszystko naraz. Realistyczna kolejność:</p>
+
+<ul>
+  <li><strong>Tydzień 1-2:</strong> Pełna konfiguracja BaseLinker — synchronizacja stanów Allegro + Shopify. To eliminuje overselling i podwójną pracę.</li>
+  <li><strong>Tydzień 3-4:</strong> Alerty o niskim stanie (Make + Slack/mail). Proste: stan &lt; próg → powiadomienie. Marek przestaje być jedynym „alertem".</li>
+  <li><strong>Tydzień 5-6:</strong> Arkusz porównawczy hurtowni (Make + scraping/import). Oszczędność 1-2h dziennie.</li>
+  <li><strong>Miesiąc 2:</strong> Dashboard rotacji + klasyfikacja ABC. Marek podejmuje decyzje na danych, nie na wyczuciu.</li>
+  <li><strong>Miesiąc 3:</strong> Automatyczne drafty zamówień + OCR przyjęcia dostawy. Pełna pętla zamknięta.</li>
+</ul>
+
+<hr class="divider">
+
+<h2>Kluczowe metryki (przed i po)</h2>
+
+<div class="stats-grid">
+  <div class="stat-row header">
+    <div>Metryka</div>
+    <div>Przed (AS-IS)</div>
+    <div>Cel (TO-BE)</div>
+  </div>
+  <div class="stat-row">
+    <div class="label">Czas Marka na logistykę dziennie</div>
+    <div class="from">2-3h</div>
+    <div class="to">30-45 min</div>
+  </div>
+  <div class="stat-row">
+    <div class="label">Anulowane zamówienia (overselling) / mies.</div>
+    <div class="from">5-8</div>
+    <div class="to">0-1</div>
+  </div>
+  <div class="stat-row">
+    <div class="label">Czas od „brak towaru" do zamówienia</div>
+    <div class="from">1-2 dni (bo nie zauważa)</div>
+    <div class="to">&lt; 2h (alert)</div>
+  </div>
+  <div class="stat-row">
+    <div class="label">Czas porównywania cen hurtowni</div>
+    <div class="from">55 min / dzień</div>
+    <div class="to">10 min</div>
+  </div>
+  <div class="stat-row">
+    <div class="label">Rozbieżność stanów Allegro vs Shopify</div>
+    <div class="from">Częsta (1-2 dni opóźnienia)</div>
+    <div class="to">Real-time sync</div>
+  </div>
+  <div class="stat-row">
+    <div class="label">Kto może zamówić towar</div>
+    <div class="from">Tylko Marek</div>
+    <div class="to">Marek + Kasia (z reguł)</div>
+  </div>
+</div>
+
+</article>
+
+<footer>
+  <div class="credit">
+    <img src="assets/nocodework-logo-white.svg" alt="NoCodeWork">
+    <span>Materiały przygotowane przez <a href="https://nocodework.io" target="_blank" rel="noopener">NoCodeWork</a> dla AIbiz</span>
+  </div>
+  <div class="note">
+    <a href="case-study-1.html">← Case Study #1</a> &nbsp;·&nbsp; <a href="index.html">Wróć do hubu</a>
+  </div>
+</footer>
+
+</main>
+</body>
+</html>
